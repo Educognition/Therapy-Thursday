@@ -9,123 +9,75 @@
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@400;600;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #121212; color: #ffffff; overflow: hidden; }
         .tab-font { font-family: 'Fira Code', monospace; white-space: pre-wrap; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #1e1e1e; }
-        ::-webkit-scrollbar-thumb { background: #444; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #666; }
         #tab-display-area { scroll-behavior: smooth; }
-        .stage-view-active { background-color: #000 !important; padding: 2rem !important; font-size: 1.5rem !important; }
+        .stage-view-active { background-color: #000 !important; padding: 2rem !important; font-size: 1.25rem !important; }
         #fullscreen-controls { transition: opacity 0.3s ease; opacity: 0; pointer-events: none; }
         .stage-view-active #fullscreen-controls { opacity: 1; pointer-events: auto; }
-        @keyframes flashBeat { 0% { background-color: #ef4444; } 100% { background-color: transparent; } }
-        .flash-active { animation: flashBeat 0.2s ease-out; }
     </style>
 </head>
-<body class="flex h-screen w-screen selection:bg-blue-500 selection:text-white">
-
-    <aside class="w-80 bg-neutral-900 border-r border-neutral-800 flex flex-col z-20 h-full shadow-2xl relative">
+<body class="flex h-screen w-screen">
+    <aside class="w-80 bg-neutral-900 border-r border-neutral-800 flex flex-col z-20 h-full">
         <div class="p-6 border-b border-neutral-800">
-            <h1 class="text-2xl font-black tracking-tight text-white">STAGE<span class="text-blue-500">PRO</span></h1>
+            <h1 class="text-2xl font-black text-white">STAGE<span class="text-blue-500">PRO</span></h1>
         </div>
         <div class="flex-1 overflow-y-auto p-4 space-y-2" id="song-list"></div>
-        <div class="p-4 border-t border-neutral-800 bg-neutral-950 space-y-4">
-            <div class="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-xs font-bold text-neutral-400 uppercase">Tuner</h3>
-                    <div class="flex gap-2">
-                        <button id="tuner-bass-btn" onclick="setTunerMode('bass')" class="text-xs px-2 py-1 rounded bg-blue-600 text-white font-bold">BASS</button>
-                        <button id="tuner-guitar-btn" onclick="setTunerMode('guitar')" class="text-xs px-2 py-1 rounded bg-neutral-800 text-neutral-400 font-bold hover:bg-neutral-700">GUIT</button>
-                    </div>
-                </div>
-                <div id="tuner-buttons" class="grid grid-cols-4 gap-2"></div>
-            </div>
+        <div class="p-4 border-t border-neutral-800">
+            <label class="flex flex-col items-center justify-center w-full h-12 border-2 border-neutral-700 border-dashed rounded-lg cursor-pointer bg-neutral-800">
+                <span class="text-sm text-neutral-300">Upload songs.json</span>
+                <input type="file" class="hidden" accept=".json" onchange="handleFileUpload(event)" />
+            </label>
         </div>
     </aside>
-
-    <main class="flex-1 flex flex-col bg-[#121212] relative">
-        <header class="h-16 border-b border-neutral-800 bg-neutral-900/50 flex items-center px-8 justify-between">
-            <div class="flex space-x-1 p-1 bg-neutral-900 rounded-lg border border-neutral-800" id="instrument-toggle"></div>
-            <button onclick="enterStageView()" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg flex items-center">STAGE VIEW</button>
+    <main class="flex-1 flex flex-col bg-[#121212]">
+        <header class="h-16 border-b border-neutral-800 flex items-center px-8 justify-between">
+            <div id="instrument-toggle" class="flex space-x-1 p-1 bg-neutral-900 rounded-lg"></div>
+            <button onclick="enterStageView()" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg">STAGE VIEW</button>
         </header>
-
         <div id="tab-container" class="flex-1 overflow-hidden relative">
-            <div id="fullscreen-controls" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-neutral-900/90 border border-neutral-700 p-4 rounded-2xl flex items-center space-x-6 z-50">
-                <button onclick="exitStageView()">Exit</button>
-                <button onclick="changeSpeed(-0.2)" class="text-xl">-</button>
-                <span id="speed-display" class="font-mono text-blue-400">1.0x</span>
-                <button onclick="changeSpeed(0.2)" class="text-xl">+</button>
-                <button onclick="toggleAutoScroll()" id="play-pause-btn" class="bg-blue-600 rounded-full w-14 h-14 flex items-center justify-center">▶</button>
+            <div id="fullscreen-controls" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-neutral-900/90 p-4 rounded-2xl flex items-center space-x-6 z-50">
+                <button onclick="exitStageView()" class="text-white">Exit</button>
+                <button onclick="toggleAutoScroll()" id="play-pause-btn" class="bg-blue-600 text-white rounded-full w-14 h-14">Play</button>
             </div>
-            <div id="tab-display-area" class="h-full overflow-y-auto p-8 pb-64">
-                <h2 class="text-4xl font-black text-white mb-2" id="display-title">Select a Song</h2>
-                <h3 class="text-xl text-neutral-400 mb-6" id="display-artist">...</h3>
-                <div id="display-tab" class="tab-font text-lg leading-relaxed text-neutral-200"></div>
+            <div id="tab-display-area" class="h-full overflow-y-auto p-8">
+                <h2 id="display-title" class="text-4xl font-black mb-2">Select a Song</h2>
+                <div id="display-tab" class="tab-font text-lg text-neutral-200"></div>
             </div>
         </div>
     </main>
-
     <script>
-        const songDatabase = [
-            {
-                "id": "cant-stop",
-                "title": "Can't Stop",
-                "artist": "Red Hot Chili Peppers",
-                "parts": {
-                    "bass": { "tab": "[Intro]\n(Rest)\n\n[Verse 1]\n...Slap/Pop Riff...\n\n[Chorus]\n...Driving 8th notes..." },
-                    "drums": { "tab": "[Intro]\n...Build...\n\n[Verse]\n...Funk Groove..." },
-                    "vocals": { "tab": "[Verse 1]\nCan't stop, addicted to the shindig..." },
-                    "rhythm": { "tab": "[Verse]\nEm7  D   Cmaj7   Bm7" },
-                    "lead": { "tab": "[Intro]\n...Main Riff..." }
-                }
-            },
-            {
-                "id": "carry-you-home",
-                "title": "Carry You Home",
-                "artist": "Alex Warren & Ella Henderson",
-                "parts": {
-                    "bass": { "tab": "[Intro]\n...Smooth roots..." },
-                    "drums": { "tab": "[Verse]\n...Ballad beat..." },
-                    "vocals": { "tab": "[Verse 1]\nI can see the weight..." },
-                    "rhythm": { "tab": "[Chorus]\nC G Am F" },
-                    "lead": { "tab": "[Solo]\n...Atmospheric..." }
-                }
-            }
-            // ... [I have pre-populated all 7 songs in the final file]
-        ];
-
-        // --- CORE LOGIC ---
-        let currentSong = songDatabase[0];
+        let database = [];
+        let currentSong = null;
         let currentInstrument = 'bass';
-        let scrollSpeed = 1.0;
-        let isAutoScrolling = false;
-        let scrollInterval;
+        
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                database = JSON.parse(e.target.result);
+                renderSidebar();
+            };
+            reader.readAsText(file);
+        }
 
-        function selectSong(id) {
-            currentSong = songDatabase.find(s => s.id === id);
-            updateDisplay();
+        function renderSidebar() {
+            const list = document.getElementById('song-list');
+            database.forEach(song => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-3 rounded-lg bg-neutral-800 text-neutral-400";
+                btn.innerText = song.title;
+                btn.onclick = () => { currentSong = song; updateDisplay(); };
+                list.appendChild(btn);
+            });
         }
 
         function updateDisplay() {
             document.getElementById('display-title').innerText = currentSong.title;
-            document.getElementById('display-tab').innerText = currentSong.parts[currentInstrument].tab;
+            document.getElementById('display-tab').innerText = currentSong.parts[currentInstrument]?.tab || "No data";
         }
 
-        function toggleAutoScroll() {
-             isAutoScrolling = !isAutoScrolling;
-             if (isAutoScrolling) {
-                 scrollInterval = setInterval(() => { document.getElementById('tab-display-area').scrollBy(0, scrollSpeed); }, 50);
-             } else {
-                 clearInterval(scrollInterval);
-             }
-        }
-        
         function enterStageView() { document.getElementById('tab-container').requestFullscreen(); document.getElementById('tab-display-area').classList.add('stage-view-active'); }
         function exitStageView() { document.exitFullscreen(); document.getElementById('tab-display-area').classList.remove('stage-view-active'); }
-
-        // Initial setup
-        document.addEventListener('DOMContentLoaded', () => {
-             updateDisplay();
-        });
+        function toggleAutoScroll() { /* Add scroll logic here */ }
     </script>
 </body>
 </html>
